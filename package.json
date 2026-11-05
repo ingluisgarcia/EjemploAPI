@@ -1,0 +1,26 @@
+{
+  "name": "api-vercel-supabase-ejemplo",
+  "version": "1.0.0",
+  "description": "API RESTful con Express, Supabase y soporte para Vercel Serverless",
+  "type": "module",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js",
+    "dev": "node --watch api/index.js"
+  },
+  "keywords": [
+    "express",
+    "supabase",
+    "vercel",
+    "cors",
+    "rest-api"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
