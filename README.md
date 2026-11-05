@@ -91,16 +91,136 @@ npx vercel
 
 ---
 
-## 📡 Documentación de Endpoints (CRUD)
+## 📡 Endpoints de la API
 
-| Método | Endpoint | Descripción | Body (JSON) |
+| Método | Endpoint | Descripción | Formato de `data` en la Respuesta |
 |---|---|---|---|
-| **GET** | `/` | Información y estado de la API | No |
-| **GET** | `/api/tareas` | Obtener todas las tareas | No |
-| **GET** | `/api/tareas/:id` | Obtener una tarea por su ID | No |
-| **POST** | `/api/tareas` | Crear una nueva tarea | `{"titulo": "Comprar pan", "descripcion": "Opcional"}` |
-| **PUT** | `/api/tareas/:id` | Actualizar una tarea existente | `{"completada": true}` o `{"titulo": "Nuevo titulo"}` |
-| **DELETE**| `/api/tareas/:id` | Eliminar una tarea por ID | No |
+| **GET** | `/` | Información y estado de la API | - |
+| **GET** | `/api/tareas` | Obtener todas las tareas | `Array<Object>` (`[ { id, titulo, ... } ]`) |
+| **GET** | `/api/tareas/:id` | Obtener una tarea por su ID | `Array<Object>` (`[ { id, titulo, ... } ]`) |
+| **POST** | `/api/tareas` | Crear una nueva tarea | `Object` (`{ id, titulo, ... }`) |
+| **PUT** | `/api/tareas/:id` | Actualizar una tarea existente | `Object` (`{ id, titulo, ... }`) |
+| **DELETE**| `/api/tareas/:id` | Eliminar una tarea por ID | `Object` (`{ id, titulo, ... }`) |
+
+> 📌 **Formato unificado para los GET:** Tanto la consulta de todas las tareas como la búsqueda por ID devuelven el campo `data` como un arreglo de objetos (`[ { ... } ]`), facilitando el consumo iterativo desde el frontend.
+
+---
+
+## 📝 Guía: Cómo Diligenciar las Peticiones POST y PUT
+
+Para realizar peticiones **POST** y **PUT** correctamente desde clientes como **Postman**, **Thunder Client** (VS Code), **Insomnia** o desde código frontend (Fetch / Axios), ten en cuenta las siguientes especificaciones:
+
+### ⚙️ Reglas Generales (Cabeceras y Formato)
+1. **Header obligatorio:**
+   - `Content-Type: application/json`
+2. **Formato en Postman / Thunder Client:**
+   - En la pestaña **Body**, selecciona la opción **raw**.
+   - En el menú desplegable del tipo de contenido a la derecha, selecciona **JSON**.
+
+---
+
+### 🟢 1. Cómo diligenciar un POST (Crear Tarea)
+
+* **Método:** `POST`
+* **URL:** `http://localhost:3000/api/tareas` *(o `https://tu-api.vercel.app/api/tareas`)*
+
+#### Campos aceptados en el Body JSON:
+
+| Campo | Tipo | Obligatorio | Descripción | Valor por defecto |
+|---|---|---|---|---|
+| `titulo` | `string` | **Sí** | Título de la tarea. No puede estar vacío. | *Requerido* |
+| `descripcion` | `string` | No (Opcional) | Detalle o nota de la tarea. | `null` |
+| `completada` | `boolean` | No (Opcional) | Estado de la tarea (`true` o `false`). | `false` |
+
+#### Ejemplos de Body JSON para POST:
+
+* **Ejemplo Mínimo (solo campos obligatorios):**
+  ```json
+  {
+    "titulo": "Estudiar para el examen de Express"
+  }
+  ```
+
+* **Ejemplo Completo:**
+  ```json
+  {
+    "titulo": "Preparar presentación de proyecto",
+    "descripcion": "Diseñar diapositivas y verificar los endpoints en Vercel",
+    "completada": false
+  }
+  ```
+
+* **Paso a paso en Postman / Thunder Client:**
+  1. Selecciona el método **POST**.
+  2. Ingresa la URL: `http://localhost:3000/api/tareas`.
+  3. Ve a la pestaña **Body** -> selecciona **raw** -> tipo **JSON**.
+  4. Pega cualquiera de los JSON de ejemplo anteriores.
+  5. Haz clic en **Send**.
+  6. Recibirás un estado `201 Created` con la tarea registrada y su ID autogenerado.
+
+---
+
+### 🟡 2. Cómo diligenciar un PUT (Actualizar Tarea)
+
+* **Método:** `PUT`
+* **URL:** `http://localhost:3000/api/tareas/:id` *(reemplaza `:id` por el número de ID de la tarea a modificar, ej: `/api/tareas/1`)*
+
+#### Reglas de los campos:
+* **No necesitas enviar todos los campos**: Puedes enviar solo el campo o campos que deseas modificar.
+* **Debes enviar al menos un campo válido** (`titulo`, `descripcion` o `completada`).
+* Si envías `completada`, debe ser un valor booleano (`true` o `false`), **no** texto entre comillas (`"true"`).
+
+| Campo | Tipo | Requerido | Descripción |
+|---|---|---|---|
+| `titulo` | `string` | Opcional | Nuevo título (no puede ser un texto en blanco). |
+| `descripcion` | `string` | Opcional | Nueva descripción. |
+| `completada` | `boolean` | Opcional | Nuevo estado booleano (`true` o `false`). |
+
+#### Ejemplos de Body JSON para PUT según el caso:
+
+* **Caso A: Solo marcar la tarea como completada o pendiente:**
+  ```json
+  {
+    "completada": true
+  }
+  ```
+
+* **Caso B: Modificar título y descripción:**
+  ```json
+  {
+    "titulo": "Título actualizado de la tarea",
+    "descripcion": "Nueva descripción detallada"
+  }
+  ```
+
+* **Caso C: Modificar todos los campos:**
+  ```json
+  {
+    "titulo": "Proyecto final terminado",
+    "descripcion": "Todo listo y verificado",
+    "completada": true
+  }
+  ```
+
+* **Paso a paso en Postman / Thunder Client:**
+  1. Selecciona el método **PUT**.
+  2. Ingresa la URL con el ID de la tarea: ej. `http://localhost:3000/api/tareas/1`.
+  3. Ve a la pestaña **Body** -> selecciona **raw** -> tipo **JSON**.
+  4. Pega el JSON con los campos que quieres cambiar.
+  5. Haz clic en **Send**.
+  6. Recibirás un estado `200 OK` con los datos actualizados.
+
+---
+
+### ⚠️ Errores Comunes y Códigos de Respuesta
+
+| Código | Causa frecuente | Solución |
+|---|---|---|
+| `400 Bad Request` | Falta el campo `"titulo"` en el `POST` o se envió vacío (`""`). | Asegúrate de incluir `"titulo": "Texto válido"`. |
+| `400 Bad Request` | En `PUT` enviaste un body vacío `{}`. | Envía al menos uno de los tres campos permitidos. |
+| `400 Bad Request` | Enviaste `"completada": "true"` (como string). | Envíalo como valor booleano sin comillas: `"completada": true`. |
+| `400 Bad Request` | Sintaxis JSON inválida (comas sobrantes, comillas simples). | Verifica que tu JSON use comillas dobles `"` y sea válido. |
+| `404 Not Found` | El ID enviado en la URL (`/api/tareas/:id`) no existe en la base de datos. | Verifica el ID consultando antes con `GET /api/tareas`. |
 
 ---
 

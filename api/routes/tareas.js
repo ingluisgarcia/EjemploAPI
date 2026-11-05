@@ -23,8 +23,8 @@ router.get('/', async (req, res) => {
 
     res.status(200).json({
       ok: true,
-      total: data.length,
-      data
+      total: data ? data.length : 0,
+      data: data || []
     });
   } catch (err) {
     res.status(500).json({
@@ -37,6 +37,7 @@ router.get('/', async (req, res) => {
 // ===============================================================
 // 2. GET BY ID: Obtener una tarea por su ID
 // Endpoint: GET /api/tareas/:id
+// Devuelve 'data' como un arreglo de objetos: [{ ... }]
 // ===============================================================
 router.get('/:id', async (req, res) => {
   try {
@@ -45,8 +46,7 @@ router.get('/:id', async (req, res) => {
     const { data, error } = await supabase
       .from('tareas')
       .select('*')
-      .eq('id', id)
-      .maybeSingle();
+      .eq('id', id);
 
     if (error) {
       return res.status(500).json({
@@ -55,16 +55,18 @@ router.get('/:id', async (req, res) => {
       });
     }
 
-    if (!data) {
+    if (!data || data.length === 0) {
       return res.status(404).json({
         ok: false,
-        error: `No se encontró la tarea con ID ${id}`
+        error: `No se encontró la tarea con ID ${id}`,
+        data: []
       });
     }
 
     res.status(200).json({
       ok: true,
-      data
+      total: data.length,
+      data: data // Retorna siempre un array de objetos [ { id, titulo, ... } ]
     });
   } catch (err) {
     res.status(500).json({
