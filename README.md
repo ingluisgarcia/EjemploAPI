@@ -98,8 +98,8 @@ npx vercel
 | **GET** | `/` | Información y estado de la API | - |
 | **GET** | `/api/tareas` | Obtener todas las tareas | `Array<Object>` (`[ { id, titulo, ... } ]`) |
 | **GET** | `/api/tareas/:id` | Obtener una tarea por su ID | `Array<Object>` (`[ { id, titulo, ... } ]`) |
-| **POST** | `/api/tareas` | Crear una nueva tarea | `Object` (`{ id, titulo, ... }`) |
-| **PUT** | `/api/tareas/:id` | Actualizar una tarea existente | `Object` (`{ id, titulo, ... }`) |
+| **POST** | `/api/tareas` | Crear una nueva tarea | `{ "respuesta": "Tarea creada con éxito" }` |
+| **PUT** | `/api/tareas/:id` | Actualizar una tarea existente | `{ "respuesta": "Tarea actualizada correctamente" }` |
 | **DELETE**| `/api/tareas/:id` | Eliminar una tarea por ID | `Object` (`{ id, titulo, ... }`) |
 
 > 📌 **Formato unificado para los GET:** Tanto la consulta de todas las tareas como la búsqueda por ID devuelven el campo `data` como un arreglo de objetos (`[ { ... } ]`), facilitando el consumo iterativo desde el frontend.
@@ -156,7 +156,12 @@ Para realizar peticiones **POST** y **PUT** correctamente desde clientes como **
   3. Ve a la pestaña **Body** -> selecciona **raw** -> tipo **JSON**.
   4. Pega cualquiera de los JSON de ejemplo anteriores.
   5. Haz clic en **Send**.
-  6. Recibirás un estado `201 Created` con la tarea registrada y su ID autogenerado.
+  6. Recibirás un estado `201 Created` con el cuerpo:
+     ```json
+     {
+       "respuesta": "Tarea creada con éxito"
+     }
+     ```
 
 ---
 
@@ -208,7 +213,12 @@ Para realizar peticiones **POST** y **PUT** correctamente desde clientes como **
   3. Ve a la pestaña **Body** -> selecciona **raw** -> tipo **JSON**.
   4. Pega el JSON con los campos que quieres cambiar.
   5. Haz clic en **Send**.
-  6. Recibirás un estado `200 OK` con los datos actualizados.
+  6. Recibirás un estado `200 OK` con el cuerpo:
+     ```json
+     {
+       "respuesta": "Tarea actualizada correctamente"
+     }
+     ```
 
 ---
 

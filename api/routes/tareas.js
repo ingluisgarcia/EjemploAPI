@@ -99,11 +99,9 @@ router.post('/', async (req, res) => {
       completada: typeof completada === 'boolean' ? completada : false
     };
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('tareas')
-      .insert([nuevaTarea])
-      .select()
-      .single();
+      .insert([nuevaTarea]);
 
     if (error) {
       return res.status(500).json({
@@ -113,9 +111,7 @@ router.post('/', async (req, res) => {
     }
 
     res.status(201).json({
-      ok: true,
-      mensaje: 'Tarea creada con éxito',
-      data
+      respuesta: 'Tarea creada con éxito'
     });
   } catch (err) {
     res.status(500).json({
@@ -191,9 +187,7 @@ router.put('/:id', async (req, res) => {
     }
 
     res.status(200).json({
-      ok: true,
-      mensaje: 'Tarea actualizada correctamente',
-      data
+      respuesta: 'Tarea actualizada correctamente'
     });
   } catch (err) {
     res.status(500).json({
