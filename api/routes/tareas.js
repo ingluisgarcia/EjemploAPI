@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     const { data, error } = await supabase
       .from('tareas')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('id', { ascending: true });
 
     if (error) {
       return res.status(500).json({
